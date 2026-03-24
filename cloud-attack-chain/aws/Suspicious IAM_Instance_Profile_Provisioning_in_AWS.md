@@ -38,9 +38,9 @@ A compromised IAM user `Emp02` invoked an existing Lambda function (`dev-app-lam
 
 ### 4.1 Initial Reconnaissance by Emp02
 
-> 📸 *[Screenshot 1 — Elastic: Emp02 field stats — GetCallerIdentity, ListBuckets, ListFunctions20150331]*
+![Alt text](<../images/aws/suspicious lambda function execution/Screenshot 2026-03-20 225353.png>)
 
-> 📸 *[Screenshot 2 — Elastic: Emp02 tabular view — 3 events, ListBuckets failed (AccessDenied), ListFunctions succeeded]*
+![Alt text](<../images/aws/suspicious lambda function execution/Screenshot 2026-03-20 225651.png>)
 
 At `2025-01-30T10:31:06Z`, `Emp02` called `GetCallerIdentity` to confirm their session context. Shortly after, they attempted `ListBuckets` — which was **denied** — then successfully called `ListFunctions20150331` via `lambda.amazonaws.com`, discovering available Lambda functions in the account.
 
@@ -52,17 +52,17 @@ At `2025-01-30T10:31:06Z`, `Emp02` called `GetCallerIdentity` to confirm their s
 
 ### 4.2 Lambda Invocation and Credential Generation
 
-> 📸 *[Screenshot 3 — Elastic: AssumeRole by lambda.amazonaws.com, role dev-app-lambda-role, credentials returned]*
+![Alt text](<../images/aws/suspicious lambda function execution/Screenshot 2026-03-20 230357.png>)
 
 At `2025-01-30T10:35:00Z`, Lambda assumed its execution role (`service-role/dev-app-lambda-role-edn14g4n`) with session name `dev-app-lambda`. The response contained a full set of temporary credentials (`ASIAQFC27G7Y7QZGNWQY`), expiring at **10:35 PM** the same day — granting a near 12-hour window.
 
-> 📸 *[Screenshot 4 — Lambda function code: dev-app-lambda, creates IAM access key for TARGET_IAM_USER (S3User)]*
+![Alt text](<../images/aws/suspicious lambda function execution/Screenshot 2026-03-20 230406.png>)
 
 Inspection of the Lambda function `dev-app-lambda` (`lambda_function.py`) revealed it calls `iam_client.create_access_key()` for a target user defined via environment variable `TARGET_IAM_USER` (defaulting to `S3User`). The function returns both `AccessKeyId` and `SecretAccessKey` in the response body — this is a **credential harvesting backdoor** deployed as a Lambda function.
 
 ### 4.3 Post-Compromise Activity — S3User
 
-> 📸 *[Screenshot 5 — Elastic: S3User — GetCallerIdentity, ListBuckets, ListObjects, GetObject, HeadObject, HeadBucket]*
+![Alt text](<../images/aws/suspicious lambda function execution/Screenshot 2026-03-20 230812.png>)
 
 Using the freshly generated credentials, the attacker operated as `S3User` and performed the following:
 
