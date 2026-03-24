@@ -39,8 +39,7 @@ IAM user `dev_pipeline_user_07` was observed creating a custom IAM role (`EC2Rol
 
 ### 4.1 Role Creation
 
-> 📸 *[Screenshot 7 — Elastic: CreateRole event, EC2Role, ec2.amazonaws.com trust policy]*
-
+![Alt text](<../images/aws/suspicious iam instance profile creation/Screenshot 2026-03-20 184011.png>)
 At `2025-01-31T07:34:06Z`, `dev_pipeline_user_07` created an IAM role named `EC2Role` from IP `36.255.87.6`. The trust policy was configured to allow `ec2.amazonaws.com` to perform `sts:AssumeRole` — meaning any EC2 instance can assume this role automatically at launch.
 
 ```json
@@ -53,7 +52,7 @@ At `2025-01-31T07:34:06Z`, `dev_pipeline_user_07` created an IAM role named `EC2
 
 ### 4.2 Policy Attachment
 
-> 📸 *[Screenshot 8 — Elastic: AttachRolePolicy, AmazonS3ReadOnlyAccess → EC2Role]*
+![Alt text](<../images/aws/suspicious iam instance profile creation/Screenshot 2026-03-20 183124.png>)
 
 At `2025-01-31T07:40:02Z`, the managed policy `AmazonS3ReadOnlyAccess` was attached to `EC2Role` from IP `36.255.87.2`. This grants any EC2 instance using this role full read access to all S3 buckets in the account.
 
@@ -64,9 +63,8 @@ At `2025-01-31T07:40:02Z`, the managed policy `AmazonS3ReadOnlyAccess` was attac
 
 ### 4.3 Instance Profile Creation and Role Assignment
 
-> 📸 *[Screenshot 9 — Elastic: CreateInstanceProfile, EC2InstanceProfile]*
-
-> 📸 *[Screenshot 10 — Elastic: AddRoleToInstanceProfile — failed with MyEC2Role, succeeded with EC2Role]*
+![Alt text](<../images/aws/suspicious iam instance profile creation/Screenshot 2026-03-20 182531.png>)
+![Alt text](<../images/aws/suspicious iam instance profile creation/Screenshot 2026-03-20 183124.png>)
 
 At `2025-01-31T07:41:14Z`, an instance profile named `EC2InstanceProfile` was created. Shortly after, `dev_pipeline_user_07` attempted to attach `MyEC2Role` to the profile (which **failed**), then successfully attached `EC2Role` at `07:43:27Z`.
 
