@@ -39,7 +39,7 @@ IAM user `Batch2_Emp09` was observed modifying an existing IAM policy (`Resource
 
 ### 4.1 Policy Modification
 
-> 📸 *[Screenshot 6 — Elastic: CreatePolicyVersion by Batch2_Emp09, Resource_Access_Policy, ec2:* on instance i-0dbcce9ecac58d534]*
+![Alt text](<../images/aws/unauthrized IAM Policy modification/Screenshot 2026-03-20 222446.png>)
 
 At `2025-01-30T10:26:22Z`, `Batch2_Emp09` called `CreatePolicyVersion` on `Resource_Access_Policy`, injecting two new permission statements and setting it as the **default version (V6)**:
 
@@ -60,9 +60,9 @@ This granted full EC2 control over a specific instance — targeted and delibera
 
 ### 4.2 Full Activity Timeline of Batch2_Emp09
 
-> 📸 *[Screenshot 7 — Elastic: Instance ID pivot — CreatePolicyVersion and StopInstances events]*
+![Alt text](<../images/aws/unauthrized IAM Policy modification/Screenshot 2026-03-20 222806.png>)
 
-> 📸 *[Screenshot 8 — Elastic: All 5 events for Batch2_Emp09 — GetCallerIdentity, CreatePolicyVersion, DescribeInstances x2, StopInstances]*
+![Alt text](<../images/aws/unauthrized IAM Policy modification/Screenshot 2026-03-20 223142.png>)
 
 | Timestamp (UTC) | Action | Outcome | Notes |
 |---|---|---|---|
@@ -76,9 +76,7 @@ The sequence is unambiguous — the user modified the policy specifically to gai
 
 ### 4.3 TheHive Case Reference
 
-> 📸 *[Screenshot 9 — TheHive Case #3 Task details — Investigation steps]*
-
-> 📸 *[Screenshot 10 — TheHive Case #3 General — Unauthorized IAM Policy Modification, SEV:MEDIUM]*
+![Alt text](<../images/aws/unauthrized IAM Policy modification/Screenshot 2026-03-20 223353.png>)
 
 Case `#3` was raised in TheHive with severity **MEDIUM**, tagged `AWS`, `IAM`, `Policy Modification`, `Privilege Escalation`. Time to detect: **approximately 1 hour**. Investigation tasks included identifying the modified policy, attributing the actor, assessing privileges granted, and examining post-modification actions.
 
