@@ -38,9 +38,7 @@ An unauthenticated attacker used the web fuzzing tool **Wfuzz** to enumerate obj
 ## 4. Detailed Analysis
 
 ### 4.1 Phase 1 — Unauthenticated Bucket Enumeration via Wfuzz
-
-> 📸 *[Screenshot 5 — Elastic: 4,619 events on appbackupfilesbuk, user_agent.original top value: Wfuzz/3.1.0 (99.8%)]*
-
+![Alt text](cloud-attack-chain/images/aws/unexpected s3 bucket deletion activity/Screenshot 2026-03-20 173353.png)
 > 📸 *[Screenshot 6 — Elastic: event.action breakdown — GetObject 99.8%, bucket appbackupfilesbuk]*
 
 > 📸 *[Screenshot 7 — Elastic: Expanded Wfuzz record — GetObject success, key=config.txt, anonymous identity, IP 36.255.87.5]*
