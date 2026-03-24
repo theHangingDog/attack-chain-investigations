@@ -78,10 +78,7 @@ The failed first attempt with `MyEC2Role` suggests the actor tried an existing r
 
 ### 4.4 TheHive Case Reference
 
-> 📸 *[Screenshot 11 — TheHive Case #2, Suspicious IAM Instance Profile Provisioning]*
-
-> 📸 *[Screenshot 12 — TheHive Case #2 Task Details — Investigation steps]*
-
+![Alt text](<../images/aws/suspicious iam instance profile creation/Screenshot 2026-03-20 184426.png>)
 Case `#2` was created in TheHive with severity **CRITICAL**, tagged `AWS`, `EC2`, `Privilege Escalation`. Detection time: **29 seconds**. Investigation tasks included tracing instance profile creation, role assignment, policy analysis, and AttachRolePolicy review.
 
 ---
