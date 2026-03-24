@@ -38,17 +38,17 @@ A compromised IAM user **Emp05** was observed making repeated `AssumeRole` attem
 
 ### 4.1 Role Enumeration / Brute-Force Attempts
 
-> 📸 *[Screenshot 1 — Elastic: AssumeRole query, 20 events, error breakdown]*
+![Alt text](<../images/aws/suspicious cross account trust relationship/Screenshot 2026-03-21 095233.png>)
 
-> 📸 *[Screenshot 2 — Elastic: AccessDenied filter, 18 events, Emp05, IP 36.255.87.4]*
+![Alt text](<../images/aws/suspicious cross account trust relationship/Screenshot 2026-03-21 095559.png>)
 
-> 📸 *[Screenshot 3 — Elastic: Continuation of AccessDenied events]*
+![Alt text](<../images/aws/suspicious cross account trust relationship/Screenshot 2026-03-21 095613.png>)
 
 User `Emp05` made **18 consecutive `AssumeRole` calls**, all returning `AccessDenied`, targeting multiple role ARNs (`arn:aws:iam::010928207857:role/1` through `/A`). All requests originated from `36.255.87.4` using `Boto3/1.34.124` (Python automation tool), indicating scripted enumeration.
 
 ### 4.2 ValidationException — Session Duration Abuse Attempt
 
-> 📸 *[Screenshot 4 — Elastic: ValidationException event, durationSeconds 43200]*
+![Alt text](<../images/aws/suspicious cross account trust relationship/Screenshot 2026-03-21 095807.png>)
 
 One attempt returned a `ValidationException` — the attacker requested a session of **43,200 seconds (12 hours)**, exceeding the role's `MaxSessionDuration`. This reveals deliberate intent to maintain long-term persistent access.
 
@@ -57,8 +57,7 @@ One attempt returned a `ValidationException` — the attacker requested a sessio
 
 ### 4.3 Successful Role Assumption & Data Exfiltration
 
-> 📸 *[Screenshot 5 — Elastic: Assume_Role session — ListObjects, GetObject on finance bucket]*
-
+![Alt text](<../images/aws/suspicious cross account trust relationship/Screenshot 2026-03-21 101348.png>)
 Following the failed attempts (likely after obtaining valid credentials or a policy change), the attacker successfully assumed the role. Using the session `Assume_Role/QwVMDSy9rMLf0SgNa3e8`, the following actions were recorded:
 
 | Timestamp (UTC) | Action | Resource | Outcome |
@@ -73,7 +72,7 @@ The `GetObject` call confirms **exfiltration of financial data**.
 
 ### 4.4 TheHive Case Reference
 
-> 📸 *[Screenshot 6 — TheHive Case #5, Suspicious Cross-Account Trust Relationship Identified]*
+![Alt text](<../images/aws/suspicious cross account trust relationship/Screenshot 2026-03-21 101406.png>)
 
 Case `#5` was created in TheHive with severity **CRITICAL**, tagged `AWS`, `Trust Relationship`, `Privilege Escalation`, `IAM`, `Cross-Account Trust`. Detection time: **27 seconds**.
 
