@@ -38,32 +38,29 @@ An unauthenticated attacker used the web fuzzing tool **Wfuzz** to enumerate obj
 ## 4. Detailed Analysis
 
 ### 4.1 Phase 1 — Unauthenticated Bucket Enumeration via Wfuzz
-![Alt text](cloud-attack-chain/images/aws/unexpected s3 bucket deletion activity/Screenshot 2026-03-20 173353.png)
-> 📸 *[Screenshot 6 — Elastic: event.action breakdown — GetObject 99.8%, bucket appbackupfilesbuk]*
-
-> 📸 *[Screenshot 7 — Elastic: Expanded Wfuzz record — GetObject success, key=config.txt, anonymous identity, IP 36.255.87.5]*
-
+![Alt text](<../images/aws/unexpected s3 bucket deletion activity/Screenshot 2026-03-20 173353.png>)
+![Alt text](<../images/aws/unexpected s3 bucket deletion activity/Screenshot 2026-03-20 173414.png>)
+![Alt text](<../images/aws/unexpected s3 bucket deletion activity/Screenshot 2026-03-20 173635.png>)
 An anonymous actor used **Wfuzz 3.1.0** — a brute-force web/path fuzzer — to fire **4,619 requests** against `appbackupfilesbuk`, attempting to enumerate object keys (visible keys include: `databases`, `decrypt`, `dav`, `peel`, `pfx`, `phpBB2`, `php-bin`, `People`, `PDF`, `config.txt`). 
 
 The majority of requests returned `AccessDenied`, but **`config.txt` was successfully retrieved** via an anonymous `GetObject` call at `2025-01-30T10:09:41Z` from `36.255.87.5`. This file almost certainly contained plaintext AWS credentials — the bucket was publicly readable for this object.
 
 ### 4.2 Phase 2 — HelpdeskAdmin Session Established
 
-> 📸 *[Screenshot 4 — Elastic: GetCallerIdentity by HelpdeskAdmin, IP 36.255.87.6]*
+![Alt text](<../images/aws/unexpected s3 bucket deletion activity/Screenshot 2026-03-20 172954.png>)
 
 Shortly after the Wfuzz scan, `HelpdeskAdmin` authenticated and called `GetCallerIdentity` at `2025-01-30T10:13:06Z` from `36.255.87.6`, confirming the session. The user agent switched to `aws-cli/2.15.28` — indicating a human or scripted CLI session using credentials likely obtained from `config.txt`.
 
 ### 4.3 Phase 3 — Reconnaissance and Exfiltration
 
-> 📸 *[Screenshot 3 — Elastic: ListObjects and GetObject by HelpdeskAdmin — function-source.zip downloaded via s3.cp]*
+![Alt text](<../images/aws/unexpected s3 bucket deletion activity/Screenshot 2026-03-20 172327.png>)
 
-> 📸 *[Screenshot 2 — Elastic: HelpdeskAdmin full S3 activity — 9 events, all action types visible]*
+![Alt text](<../images/aws/unexpected s3 bucket deletion activity/Screenshot 2026-03-20 171042.png>)
 
 `HelpdeskAdmin` enumerated the bucket via `ListObjects` at `10:13:29Z`, identified target files, and then downloaded `function-source.zip` at `10:16:10Z` using `s3.cp` — confirming **exfiltration of application source code**. A second `ListObjects` call was made at `10:20:17Z` using `s3.rb.rm` — the S3 remove command.
 
 ### 4.4 Phase 4 — Destruction
-
-> 📸 *[Screenshot 1 — Elastic: DeleteObject (function-source.zip, config.txt) and DeleteBucket — HelpdeskAdmin, Bengaluru, 36.255.87.7]*
+![Alt text](<../images/aws/unexpected s3 bucket deletion activity/Screenshot 2026-03-20 170801.png>)
 
 At `2025-01-30T10:20:18Z`, both objects were deleted:
 - `function-source.zip` — `DeleteObject` — **Success**
